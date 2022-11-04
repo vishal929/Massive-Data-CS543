@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <title>Massive Data Project Interface</title>
+</head>
+<body>
+    <h1>Airline Clustering</h1>
+    <img src="{{url_for('static', filename='images/airplane.jpg')}}" alt="airplane" class="center"/>
+    <p> Model: {{model}}
+    <p> Season: {{season}}
+    <p> Number of Clusters: {{num_clusters}}
+    <!-- <img src="{{url_for('static', filename='{{model}}/{{season}}/{{num_clustersairplane}}.jpg')}}" alt="airplane" class="center"/>  --> 
+   
+</body>
+</html>

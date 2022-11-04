@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <title>Massive Data Project Interface</title>
+</head>
+<body>
+   <h1>Airline Clustering</h1>
+   <img src="{{url_for('static', filename='images/airplane.jpg')}}" alt="airplane" class="center"/>
+   <form method='post'>
+        <input type = "submit" name = "submit_button" value = "Winter" class="button">
+        <input type = "submit" name = "submit_button" value = "Spring" class="button">
+        <input type = "submit" name = "submit_button" value = "Summer" class="button">
+        <input type = "submit" name = "submit_button" value = "Autumn" class="button">
+    </form>
+   
+</body>
+</html>
