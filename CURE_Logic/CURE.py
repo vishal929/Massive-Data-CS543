@@ -11,6 +11,7 @@
 
 
 import numpy as np
+import random
 from sklearn.cluster import AgglomerativeClustering
 
 
@@ -31,19 +32,20 @@ class CURE_Cluster():
         for i in range(self.r):
             if i ==0:
                 # first point is chosen at random
-                chosen_index = np.random.choice(sample.shape[0],1)
-                self.representatives.append(sample[chosen_index])
+                random_point = random.choice(sample)
+                self.representatives.append(random_point)
             else: 
                 # next point is the furthest distance from the previous points
                 # distances is an array where distances[i] = distance of sample i from our current representatives
-                distances = []
+                distance_candidate = None
                 for example in sample:
                     distance = 0
                     for representative in self.representatives:
                         distance += np.linalg.norm(example-representative)
+                    if distance_candidate is None or distance > distance_candidate[0]:
+                        distance_candidate = (distance,example)
                 # picking the representative with the greatest sum of distances to our previous points
-                greatest_index = np.argmax(distances)
-                self.representatives.append(sample[greatest_index])
+                self.representatives.append(distance_candidate[1])
 
 
     # we move the r representatives a fraction closer to the centroid
@@ -80,13 +82,9 @@ class CURE_Algorithm():
         model = AgglomerativeClustering(n_clusters=self.k,affinity='euclidean',linkage='ward').fit(sample)
         # creating our cure_cluster object based on the clustering received 
 
-        #clusters are centroids, predictions are label where the predictions[i] = cluster index that sample i belongs to
-        cluster_centroids = model.cluster_centers_
+        #predictions are label where the predictions[i] = cluster index that sample i belongs to
         predictions = model.labels_
-
-        for cluster_centroid in cluster_centroids:
-            self.clusters.append(CURE_Cluster(cluster_centroid,self.r))
-
+        
         # creating a mapping {clusterIndex: [examples assigned to this cluster]}
         cluster_example_mapping = {}
         for i,prediction in enumerate(predictions):
@@ -94,17 +92,17 @@ class CURE_Algorithm():
                 cluster_example_mapping[prediction] = [sample[i]]
             else:
                 cluster_example_mapping[prediction].append(sample[i])
-
-        #  grabbing representatives for each cluster as dispersed as possible
-        #  we might be able to use parallel threads to speed this up, since we do not modify any list
-        for cluster in self.clusters:
-            cluster.set_representatives(cluster_example_mapping[prediction])
-            for i,prediction in enumerate(predictions):
-                self.clusters[prediction].add_examples(1,sample[i],np.square(sample[i]))
+        
+        #computing cluster centroids and assigning representative points
+        for cluster_number in cluster_example_mapping:
+            centroid = np.sum(cluster_example_mapping[cluster_number])/len(cluster_example_mapping[cluster_number])
+            cluster_object = CURE_Cluster(centroid,self.r)
+            cluster_object.set_representatives(cluster_example_mapping[cluster_number])
+            self.clusters.append(cluster_object)
 
         # for each cluster, moving representatives p closer to the centroid
         for cluster in self.clusters:
-            cluster.move_representatives(cluster,self.p)
+            cluster.move_representatives(self.p)
 
         # now, we have our clusters, we can tag outside of this model or call the tagging function individually afterwards...
 
