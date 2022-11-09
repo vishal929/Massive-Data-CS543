@@ -13,6 +13,9 @@ Place the weather station metadata file, ghcnd-stations.txt, under weather_raw/m
 In order to join weather data to airplane data, please first run the weather_airline_processing.ipynb file.
 This will generate intermediate maps needed to efficiently join the weather daily data to the airplane flight data.
 
+Then, please run the data_processing.ipynb notebook. This will actually join the weather data, add a unique record ID
+and then save the data in parquet format in directory ./FINAL_processed_data
+
 
 ## Batched Execution
 Please refer to bfr_clusters.ipynb for an example of batched execution/clustering.
