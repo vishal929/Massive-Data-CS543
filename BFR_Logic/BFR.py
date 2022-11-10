@@ -139,27 +139,31 @@ class BFR_Algorithm():
     '''
     
     # given a batch, we need to update the clusters, compressed set, and retained set
-    def process_batch(self,examples):
+    # we are given examples and their ids
+    # we return a dictionary of id to example mappings (basically if a given id can be summarized, we return its cluster assignment)
+    def process_batch(self,examples,ids):
         # we first assign any examples that can be summarized to clusters
         # then, we can use a main memory algorithm to cluster the remaining examples and summarize them
-
+        id_mapping = []
         for i,example in enumerate(examples):
             added = False
-            for bfr_cluster in self.clusters:
+            for j,bfr_cluster in enumerate(self.clusters):
                 # testing if this example is close to the cluster or not
                 if mahanalobis_distance(bfr_cluster,example) < self.distance_threshold:
                     # we add this point to the cluster
                     bfr_cluster.add_examples(1,example,np.square(example))
+                    id_mapping.append((ids[i],j))
                     # dont want to add this point to multiple clusters
                     added = True
                     break
             if not added:
                 # if this example was not added to a cluster, we should add it to remaining set
-                self.retained.append(example)
+                # this will be represented as an (example, id) tuple
+                self.retained.append((example,ids[i]))
 
         # running a main memory algorithm to cluster remaining examples 
         if len(self.retained)>0 and len(self.retained)>=self.k:
-            model = KMeans(n_clusters=self.k).fit(self.retained)
+            model = KMeans(n_clusters=self.k).fit([retained[0] for retained in self.retained])
 
             # creating our bfr_cluster object based on the clustering received 
             clusters = model.cluster_centers_
@@ -168,27 +172,32 @@ class BFR_Algorithm():
             # creating cluster objects
             cluster_objects = [BFR_Cluster(cluster,0,0,0) for cluster in clusters]
             for i,prediction in enumerate(predictions):
-                cluster_objects[prediction].add_examples(1,self.retained[i],np.square(self.retained[i]))
+                cluster_objects[prediction].add_examples(1,self.retained[i][0],np.square(self.retained[i][0]))
 
             # adding clusters to our compressed set
+            # for clusters in the compressed set, they are represented as (cluster,[ids]) to represent the ids that were assigned to that CS
             for cluster in cluster_objects:
-                self.compressed.append(cluster)
+                self.compressed.append((cluster,[]))
 
             further_isolated = []
             while len(self.retained)>0:
-                example = self.retained.pop()
+                tup = self.retained.pop()
+                example = tup[0]
+                id_val = tup[1]
                 added = False
                 for cs_cluster in self.compressed:
                     # testing if this example is close to the cluster or not
-                    if mahanalobis_distance(cs_cluster,example) < self.distance_threshold:
+                    if mahanalobis_distance(cs_cluster[0],example) < self.distance_threshold:
                         # we add this point to the cluster
-                        cs_cluster.add_examples(1,example,np.square(example))
+                        cs_cluster[0].add_examples(1,example,np.square(example))
+                        # adding this particular id to the "memory"
+                        cs_cluster[1].append(id_val)
                         # dont want to add this point to multiple clusters
                         added = True
                         break
                 if not added:
                     # if this example was not added to a cluster, we should add it to remaining set
-                    further_isolated.append(example)
+                    further_isolated.append(tup)
 
             # updating isolated points
             self.retained = further_isolated
@@ -196,13 +205,16 @@ class BFR_Algorithm():
                 
         # recomputing centroids for cs and for main cluster set
         for cluster in self.compressed:
-            cluster.recompute_centroid()
+            cluster[0].recompute_centroid()
 
         for cluster in self.clusters:
             cluster.recompute_centroid()
 
         # finally, we can consider merging compressed sets
         self.merge_compressed()
+        
+        # returning the id mapping of examples which have been classified so far
+        return id_mapping
 
 
     # deciding if we should merge any compressed sets together
@@ -218,8 +230,8 @@ class BFR_Algorithm():
                 for j in range(i+1,len(self.compressed)):
                     other_cluster = self.compressed[j]
                     # computing variances
-                    first_variance = np.square(cluster.compute_standard_deviation())
-                    second_variance = np.square(other_cluster.compute_standard_deviation())
+                    first_variance = np.square(cluster[0].compute_standard_deviation())
+                    second_variance = np.square(other_cluster[0].compute_standard_deviation())
                     if np.all(first_variance + second_variance < self.compression_combination_threshold):
                         # then we combine these compressed sets
                         merges_done = True
@@ -231,45 +243,50 @@ class BFR_Algorithm():
             if merges_done:
                 # we need to merge index i and index j clusters
                 # arbitrarily, we will merge j into i, and we will remove j from the list
-                self.compressed[i].merge(self.compressed[j])
+                self.compressed[i][0].merge(self.compressed[j][0])
+                # updating the ids that are now in this compressed cluster
+                self.compressed[i][1].extend(self.compressed[j][1])
+                # removing the other cluster, since not needed after the merge
                 self.compressed.pop(j)
 
 
     # if we finished passing through data, we need to assign CS and retained points to their nearest cluster
     def finalize(self):
+        id_mapping = []
         cs_cluster_pair = []
         for cs in self.compressed:
             nearest_cluster = None
             nearest_distance = None
             for i,cluster in enumerate(self.clusters):
 
-                dist = mahanalobis_distance(cluster,cs.centroid)
-                if nearest_distance is None:
+                dist = mahanalobis_distance(cluster,cs[0].centroid)
+                if nearest_distance is None or nearest_distance > dist:
                     nearest_cluster = cluster
                     nearest_distance = dist
-                else:
-                    if dist < nearest_distance:
-                        nearest_cluster = cluster
-                        nearest_distance = dist
+                
             cs_cluster_pair.append((cs,i))
-        for example in self.retained:
+        for tup in self.retained:
+            example = tup[0]
+            id_val = tup[1]
             nearest_cluster = None
+            nearest_cluster_index = None
             nearest_distance = None
             for i,cluster in enumerate(self.clusters):
                 dist = mahanalobis_distance(cluster,example)
-                if nearest_distance is None:
+                if nearest_distance is None or nearest_distance > dist:
                     nearest_cluster = cluster
                     nearest_distance = dist
-                else:
-                    if dist < nearest_distance:
-                        nearest_cluster = cluster
-                        nearest_distance = dist 
+                    nearest_cluster_index = i
             # adding this point to the nearest cluster we found
             nearest_cluster.add_examples(1,example,np.square(example))
+            id_mapping.append((id_val,nearest_cluster_index))
 
         # merging compressed sets now to their destination clusters
         for cs_index in cs_cluster_pair:
-            self.clusters[cs_index[1]].merge(cs_index[0])
+            self.clusters[cs_index[1]].merge(cs_index[0][0])
+            # adding all the ids from this compressed set to the cluster
+            for example_id in cs_index[0][1]:
+                id_mapping.append((example_id,cs_index[1]))
 
         # clearing retained and cs sets
         self.compressed.clear()
@@ -278,4 +295,7 @@ class BFR_Algorithm():
         # recomputing centroids
         for cluster in self.clusters:
             cluster.recompute_centroid()
+            
+        # returning the final id_mapping
+        return id_mapping
 
