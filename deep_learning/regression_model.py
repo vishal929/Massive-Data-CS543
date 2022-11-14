@@ -12,14 +12,16 @@ class Airline_Weather_Regression_Model(torch.nn.Module):
     def __init__(self,num_hidden,input_features,hidden_features):
         super(Airline_Weather_Regression_Model, self).__init__()
         # creating the layers we want the model to have
+
+        # initial layer does not include batchnorm, since we are inputting normalized data anyway
+        self.initial_layer = torch.nn.Sequential(
+            torch.nn.Linear(input_features,hidden_features,bias=True),
+            torch.nn.GELU(),
+            torch.nn.Dropout(p=0.2)
+        )
         self.hidden_layers = torch.nn.ModuleList()
         for i in range(num_hidden):
-            if i==0:
-                # initial feedforward
-                self.hidden_layers.append(FeedForward(input_features,hidden_features))
-            else:
-                # rest of layers
-                self.hidden_layers.append(FeedForward(hidden_features,hidden_features))
+            self.hidden_layers.append(FeedForward(hidden_features,hidden_features))
 
         # for regression output we want to use a linear layer so that we make 0 assumptions about the output
         self.output_layer = torch.nn.Sequential(
@@ -28,6 +30,8 @@ class Airline_Weather_Regression_Model(torch.nn.Module):
 
     def forward(self,x):
         # forward pass application to record
+        x = self.initial_layer(x)
+
         for layer in self.hidden_layers:
             x = layer(x)
 

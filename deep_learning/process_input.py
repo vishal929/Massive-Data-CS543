@@ -50,8 +50,14 @@ def process_dataset(is_categorical):
 
 # creating a custom pytorch dataset for our tasks
 class Airplane_Weather_Dataset(Dataset):
-    def __init__(self, task, split, transform=None, target_transform=None):
+    # standard transform is mean stddev normalization
+    def __init__(self, task, split):
         self.records = pd.read_parquet(task+'_'+split)
+        self.records_max = self.records.max()
+        self.records_min = self.records.min()
+
+        # min-max scaling
+        self.records = (self.records-self.records_min)/(self.records_max - self.records_min)
 
     def __len__(self):
         return len(self.records)
