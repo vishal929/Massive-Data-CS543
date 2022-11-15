@@ -16,6 +16,9 @@ This will generate intermediate maps needed to efficiently join the weather dail
 Then, please run the data_processing.ipynb notebook. This will actually join the weather data, add a unique record ID
 and then save the data in parquet format in directory ./FINAL_processed_data
 
+We provide our processed data, clusters, errors, and models at the following drive link: 
+[here](https://drive.google.com/drive/folders/1gDONjpM9gBYyLcgn1S3Sw5Chu5NICH5E?usp=sharing)
+
 
 ## Batched Execution
 Please refer to bfr_clusters.ipynb for an example of batched execution/clustering.
