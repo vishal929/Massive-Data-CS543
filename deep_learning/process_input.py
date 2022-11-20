@@ -24,14 +24,11 @@ def modify_dep_delay(depDelay):
 def process_dataset(is_categorical):
     # reading in multiple parquet files created by spark (since they were written in partitions)
     df = pd.read_parquet('../FINAL_processed_data')
-    # applying function to "depDelay" column to make it either a 1 if there is a delay, or 0 if there is no delay
+    # applying function to "DepDelay" column to make it either a 1 if there is a delay, or 0 if there is no delay
     if is_categorical:
-        df['depDelay'] = df['depDelay'].map(modify_dep_delay)
+        df['DepDelay'] = df['DepDelay'].map(modify_dep_delay)
 
-    # we need to drop the "elapsedTime" column because that is something the network cannot know in advance
-    df.drop('elapsedTime')
-    # we can drop the record_id column, no need for that in our training or testing
-    df.drop('record_id')
+    
 
     # splitting into train_test_val
     train, remaining = train_test_split(df,train_size=0.8,shuffle=True)
@@ -65,4 +62,6 @@ class Airplane_Weather_Dataset(Dataset):
     def __getitem__(self, idx):
         # returning (processed_record, label/target) for prediction tasks
         requested = self.record.iloc[[idx]]
-        return requested.drop('depDelay'), requested['depDelay']
+        # we need to drop the "elapsedTime" column because that is something the network cannot know in advance
+        # we can drop the record_id column, no need for that in our training or testing
+        return requested.drop(['DepDelay','ActualElapsedTime','record_id']), requested['DepDelay']
