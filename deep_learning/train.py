@@ -40,7 +40,7 @@ def get_validation_loss(model,data_loader,task,device):
 # we provide a save interval for the model (i.e every 5 epochs save the model to disk)
 # we pass a model_name so that we can dump it to some file and save progress
 def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_total, num_epoch_save_interval,
-          task, optimizer, model_name, device,batch_size):
+          task, optimizer, model_name, device):
 
     # number of epochs
     for i in tqdm(range(num_epochs_completed,num_epochs_total)):
@@ -48,6 +48,7 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
         val_loss = None
         with tqdm(data_loader,unit='batch') as data:
             for data_record,label in data:
+                batch_size = data_record.shape[0]
                 data_record = data_record.to(device)
                 target = label.to(device)
                 # we have our training data, running the model
