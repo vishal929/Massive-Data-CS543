@@ -40,7 +40,7 @@ def get_validation_loss(model,data_loader,task,device):
 # we provide a save interval for the model (i.e every 5 epochs save the model to disk)
 # we pass a model_name so that we can dump it to some file and save progress
 def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_total, num_epoch_save_interval,
-          task, optimizer, model_name, device):
+          task, optimizer, model_name, device,batch_size):
 
     # number of epochs
     for i in tqdm(range(num_epochs_completed,num_epochs_total)):
@@ -86,7 +86,7 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
         # after a certain # of epochs we save our model to disk
         if num_epochs_completed % num_epoch_save_interval == 0:
             # then we dump the model to disk
-            dump_model(model,num_epochs_completed,optimizer,learning_rate,task,model_name)
+            dump_model(model,num_epochs_completed,optimizer,learning_rate,task,model_name,batch_size)
 
 
 # creating data loader for both train and validation
@@ -108,8 +108,8 @@ num_epoch_save_interval = 1
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-model,optimizer, learning_rate, num_epochs_completed, task = \
-    load_model(model_name,device,task,learning_rate,num_hidden,num_hidden_features,input_features)
+model,optimizer, learning_rate, num_epochs_completed, task, batch_size = \
+    load_model(model_name,device,task,learning_rate,num_hidden,num_hidden_features,input_features,batch_size)
 
 print('loaded our model and optimizer!')
 

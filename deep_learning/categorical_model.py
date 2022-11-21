@@ -10,7 +10,7 @@ from standard_modules import FeedForward
 # input_features is the number of features in the input
 # hidden_features is the number of features we want for each hidden layer
 class Airline_Weather_Categorical_Model(torch.nn.Module):
-    def __init__(self,num_hidden,input_features,hidden_features):
+    def __init__(self,num_hidden,input_features,hidden_features,batch_size):
         super(Airline_Weather_Categorical_Model, self).__init__()
         # creating the layers we want the model to have
 
@@ -22,7 +22,7 @@ class Airline_Weather_Categorical_Model(torch.nn.Module):
         )
         self.hidden_layers = torch.nn.ModuleList()
         for i in range(num_hidden):
-            self.hidden_layers.append(FeedForward(hidden_features,hidden_features))
+            self.hidden_layers.append(FeedForward(hidden_features,hidden_features,batch_size))
 
         # for categorical output, we want a linear layer followed by a sigmoid to get a value between 0 and 1
         self.output_layer = torch.nn.Sequential(

@@ -9,7 +9,7 @@ from categorical_model import Airline_Weather_Categorical_Model
 # we save the task with the model (either 'classification' or 'regression')
 # num_hidden is the number of hidden layers
 # num_hidden_features is the number of features in each hidden layer
-def dump_model(model, num_epochs_completed, optimizer, learning_rate, task, model_name):
+def dump_model(model, num_epochs_completed, optimizer, learning_rate, task, model_name, batch_size):
     num_hidden_features = model.num_hidden_features
     num_hidden = model.num_hidden
     input_features = model.input_features
@@ -21,7 +21,8 @@ def dump_model(model, num_epochs_completed, optimizer, learning_rate, task, mode
         'num_hidden': num_hidden,
         'num_hidden_features': num_hidden_features,
         'input_features:': input_features,
-        'task': task
+        'task': task,
+        'batch_size': batch_size
     }, model_name + '.pth')
 
 
@@ -36,13 +37,16 @@ def load_model(model_name, device, task=None, learning_rate=0.3, num_hidden=3, n
         num_hidden_features = state['num_hidden_features']
         input_features = state['input_features']
         task = state['task']
+        batch_size = state['batch_size']
         if task == 'categorical':
             # load classification model
-            model = Airline_Weather_Categorical_Model(num_hidden, input_features, num_hidden_features).to(device)
+            model = Airline_Weather_Categorical_Model(num_hidden, input_features, num_hidden_features,batch_size)\
+                .to(device)
             model.load_state_dict(state['model_state'])
         elif task == 'regression':
             # load the regression model
-            model = Airline_Weather_Regression_Model(num_hidden, input_features, num_hidden_features).to(device)
+            model = Airline_Weather_Regression_Model(num_hidden, input_features, num_hidden_features,batch_size)\
+                .to(device)
             model.load_state_dict(state['model_state'])
         else:
             model = None
@@ -54,7 +58,7 @@ def load_model(model_name, device, task=None, learning_rate=0.3, num_hidden=3, n
         optimizer.load_state_dict(state['optimizer_state'])
 
         # returning what we need to run training (or maybe evaluation)
-        return model, optimizer, learning_rate, num_epochs_completed, task
+        return model, optimizer, learning_rate, num_epochs_completed, task,batch_size
 
     # if the dump does not exist, we create a model from scratch, an optimizer and return it
     if task == 'categorical':

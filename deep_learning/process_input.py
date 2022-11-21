@@ -53,6 +53,10 @@ class Airplane_Weather_Dataset(Dataset):
     def __init__(self, task, split):
         super(Airplane_Weather_Dataset, self).__init__()
         self.records = pd.read_parquet(task + '_' + split)
+
+        # dropping ActualElapsedTime column because that is cheating (looking into future)
+        # also dropping record_id column
+        self.records.drop(columns=['ActualElapsedTime','record_id'],inplace=True)
         self.records_max = self.records.max()
         self.records_min = self.records.min()
 
@@ -65,8 +69,7 @@ class Airplane_Weather_Dataset(Dataset):
     def __getitem__(self, idx):
         # returning (processed_record, label/target) for prediction tasks
         requested = self.records.iloc[[idx]]
-        # we need to drop the "elapsedTime" column because that is something the network cannot know in advance
-        # we can drop the record_id column, no need for that in our training or testing
-        record = requested.drop(['DepDelay', 'ActualElapsedTime', 'record_id']).values
+
+        record = requested.drop(columns=['DepDelay']).values
         label = requested['DepDelay'].values
-        return torch.tensor(record, torch.float32), torch.tensor(label, torch.float32)
+        return torch.tensor(record,dtype=torch.float32), torch.tensor(label,dtype=torch.float32)
