@@ -67,4 +67,4 @@ class Airplane_Weather_Dataset(Dataset):
         # we can drop the record_id column, no need for that in our training or testing
         record = requested.drop(['DepDelay','ActualElapsedTime','record_id']).values
         label = requested['DepDelay'].values
-        return record,label
+        return torch.tensor(record,torch.float32),torch.tensor(label,torch.float32)
