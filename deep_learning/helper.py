@@ -28,7 +28,8 @@ def dump_model(model, num_epochs_completed, optimizer, learning_rate, task, mode
 
 # we load the model if the specified model is saved to disk
 # otherwise, we create a new model with the specified task
-def load_model(model_name, device, task=None, learning_rate=0.3, num_hidden=3, num_hidden_features=500, input_features=15):
+def load_model(model_name, device, task=None, learning_rate=0.3,
+               num_hidden=3, num_hidden_features=500, input_features=15, batch_size=1):
     if os.path.exists(model_name + '.pth'):
         # then the model is dumped, we can load it
         state = torch.load(model_name + '.pth')
@@ -62,9 +63,11 @@ def load_model(model_name, device, task=None, learning_rate=0.3, num_hidden=3, n
 
     # if the dump does not exist, we create a model from scratch, an optimizer and return it
     if task == 'categorical':
-        model = Airline_Weather_Categorical_Model(num_hidden,input_features,num_hidden_features).to(device)
+        model = Airline_Weather_Categorical_Model(num_hidden,input_features,num_hidden_features,batch_size)\
+            .to(device)
     elif task == 'regression':
-        model = Airline_Weather_Regression_Model(num_hidden,input_features,num_hidden_features).to(device)
+        model = Airline_Weather_Regression_Model(num_hidden,input_features,num_hidden_features,batch_size)\
+            .to(device)
     else:
         model = None
 
