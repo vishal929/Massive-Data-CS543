@@ -12,6 +12,7 @@ from torch.utils.data import Dataset
 # sklearn train_test_split will be useful for initially splitting the data
 from sklearn.model_selection import train_test_split
 
+
 # function to modify the depDelay column to align with requirements for label (categorical) prediction
 def modify_dep_delay(depDelay):
     if depDelay > 0:
@@ -19,6 +20,7 @@ def modify_dep_delay(depDelay):
         return 1
     else:
         return 0
+
 
 # this creates train,test,and validation splits for both categorical tasks and the regression task
 # is_categorical is True if we want to process for the categorical task, otherwise false
@@ -29,12 +31,10 @@ def process_dataset(is_categorical):
     if is_categorical:
         df['DepDelay'] = df['DepDelay'].map(modify_dep_delay)
 
-    
-
     # splitting into train_test_val
-    train, remaining = train_test_split(df,train_size=0.8,shuffle=True)
+    train, remaining = train_test_split(df, train_size=0.8, shuffle=True)
     # splitting the remaining examples in half to create validation and test sets
-    test, validation = train_test_split(remaining,train_size=0.5)
+    test, validation = train_test_split(remaining, train_size=0.5)
 
     # saving the data splits to parquet
     if is_categorical:
@@ -46,16 +46,18 @@ def process_dataset(is_categorical):
         test.to_parquet('./regression_test')
         validation.to_parquet('./regression_validation')
 
+
 # creating a custom pytorch dataset for our tasks
 class Airplane_Weather_Dataset(Dataset):
     # standard transform is max min
     def __init__(self, task, split):
-        self.records = pd.read_parquet(task+'_'+split)
+        super(Airplane_Weather_Dataset, self).__init__()
+        self.records = pd.read_parquet(task + '_' + split)
         self.records_max = self.records.max()
         self.records_min = self.records.min()
 
         # min-max scaling
-        self.records = (self.records-self.records_min)/(self.records_max - self.records_min)
+        self.records = (self.records - self.records_min) / (self.records_max - self.records_min)
 
     def __len__(self):
         return len(self.records)
@@ -65,6 +67,6 @@ class Airplane_Weather_Dataset(Dataset):
         requested = self.record.iloc[[idx]]
         # we need to drop the "elapsedTime" column because that is something the network cannot know in advance
         # we can drop the record_id column, no need for that in our training or testing
-        record = requested.drop(['DepDelay','ActualElapsedTime','record_id']).values
+        record = requested.drop(['DepDelay', 'ActualElapsedTime', 'record_id']).values
         label = requested['DepDelay'].values
-        return torch.tensor(record,torch.float32),torch.tensor(label,torch.float32)
+        return torch.tensor(record, torch.float32), torch.tensor(label, torch.float32)

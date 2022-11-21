@@ -4,8 +4,8 @@
 from tqdm import tqdm
 import torch
 from torch.utils.data import DataLoader
-from helper import dump_model, load_model
-from process_input import Airline_Weather_Dataset
+from deep_learning.helper import dump_model, load_model
+from deep_learning.process_input import Airplane_Weather_Dataset
 
 # function to get validation loss
 def get_validation_loss(model,data_loader,task,device):
@@ -90,8 +90,8 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
 
 
 # creating data loader for both train and validation
-train_set = Airline_Weather_Dataset('categorical','train')
-validation_set = Airline_Weather_Dataset('categorical','validation')
+train_set = Airplane_Weather_Dataset('categorical','train')
+validation_set = Airplane_Weather_Dataset('categorical','validation')
 
 model_name = 'test_categorical'
 task = 'categorical'
@@ -99,7 +99,7 @@ learning_rate = 0.3
 num_hidden = 3
 num_hidden_features = 500
 input_features = 15
-batch_size = 64
+batch_size = 1
 
 num_epochs_total = 100
 num_epoch_save_interval = 1
