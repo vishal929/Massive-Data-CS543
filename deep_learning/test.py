@@ -11,15 +11,20 @@ from process_input import Airplane_Weather_Dataset
 
 # for categorical, we can output loss and accuracy
 # for regression we just output the MSE (mean squared error)
-def evaluate(model,data_loader,task):
+def evaluate(model,data_loader,task,device):
     loss = 0
     if task == 'categorical':
         # we also would like to see accuracy here
         num_total = 0
         num_correct = 0
+    else:
+        num_total = None
+        num_correct = None
     with torch.no_grad():
         with tqdm(data_loader,unit='batch') as data:
             for record,target in data:
+                record = record.to(device)
+                target = target.to(device)
                 res = model(record)
 
                 if task == 'categorical':
@@ -48,8 +53,8 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # loading model from disk
 model_name = 'test_categorical'
-model = load_model(model_name=model_name)
+model = load_model(model_name,device)
 
 
 # calling evaluate
-evaluate(model,data_loader,task)
+evaluate(model,data_loader,task,device)

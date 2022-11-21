@@ -8,12 +8,13 @@ from helper import dump_model, load_model
 from process_input import Airline_Weather_Dataset
 
 # function to get validation loss
-def get_validation_loss(model,data_loader,task):
+def get_validation_loss(model,data_loader,task,device):
     val_loss = 0
     with torch.no_grad():
         with tqdm(data_loader, unit='batch') as data:
             for data_record, label in data:
-                target = None
+                data_record = data_record.to(device)
+                target = label.to(device)
                 # we have our training data, running the model
                 res = model(data_record)
 
@@ -39,7 +40,7 @@ def get_validation_loss(model,data_loader,task):
 # we provide a save interval for the model (i.e every 5 epochs save the model to disk)
 # we pass a model_name so that we can dump it to some file and save progress
 def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_total, num_epoch_save_interval,
-          task, optimizer, model_name):
+          task, optimizer, model_name, device):
 
     # number of epochs
     for i in tqdm(range(num_epochs_completed,num_epochs_total)):
@@ -47,7 +48,8 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
         val_loss = None
         with tqdm(data_loader,unit='batch') as data:
             for data_record,label in data:
-                target = None
+                data_record = data_record.to(device)
+                target = label.to(device)
                 # we have our training data, running the model
                 res = model(data_record)
 
@@ -71,7 +73,7 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
         num_epochs_completed += 1
         print('train_loss on epoch:' + str(num_epochs_completed)+', loss: ' + str(train_loss))
         # getting validation loss (if this is worse than our last validation loss we stop)
-        new_val_loss = get_validation_loss(model,val_data_loader,task)
+        new_val_loss = get_validation_loss(model,val_data_loader,task,device)
         print('validation loss on epoch:' + str(num_epochs_completed) + ', loss: ' + str(val_loss))
         if val_loss is not None and new_val_loss > val_loss:
             # our model is doing worse on validation data, we will stop here!
@@ -105,7 +107,7 @@ num_epoch_save_interval = 1
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 model,optimizer, learning_rate, num_epochs_completed, task = \
-    load_model(model_name,task,learning_rate,num_hidden,num_hidden_features,input_features)
+    load_model(model_name,device,task,learning_rate,num_hidden,num_hidden_features,input_features,device)
 
 # sending parameters etc. to device
 
@@ -118,4 +120,4 @@ val_data_loader = DataLoader(validation_set,batch_size=batch_size)
 
 # now we can call train
 train(model,data_loader,val_data_loader,num_epochs_completed,num_epochs_total,num_epoch_save_interval,
-      task,optimizer,model_name)
+      task,optimizer,model_name,device)

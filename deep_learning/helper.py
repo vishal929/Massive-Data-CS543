@@ -27,7 +27,7 @@ def dump_model(model, num_epochs_completed, optimizer, learning_rate, task, mode
 
 # we load the model if the specified model is saved to disk
 # otherwise, we create a new model with the specified task
-def load_model(model_name, task=None, learning_rate=0.3, num_hidden=3, num_hidden_features=500, input_features=15):
+def load_model(model_name, device, task=None, learning_rate=0.3, num_hidden=3, num_hidden_features=500, input_features=15):
     if os.path.exists(model_name + '.pth'):
         # then the model is dumped, we can load it
         state = torch.load(model_name + '.pth')
@@ -38,27 +38,29 @@ def load_model(model_name, task=None, learning_rate=0.3, num_hidden=3, num_hidde
         task = state['task']
         if task == 'classification':
             # load classification model
-            model = Airline_Weather_Categorical_Model(num_hidden, input_features, num_hidden_features) \
-                .load_state_dict(state['model_state'])
+            model = Airline_Weather_Categorical_Model(num_hidden, input_features, num_hidden_features).to(device)
+            model.load_state_dict(state['model_state'])
         elif task == 'regression':
             # load the regression model
-            model = Airline_Weather_Regression_Model(num_hidden, input_features, num_hidden_features) \
-                .load_state_dict(state['model_state'])
+            model = Airline_Weather_Regression_Model(num_hidden, input_features, num_hidden_features).to(device)
+            model.load_state_dict(state['model_state'])
         else:
             model = None
 
         # getting the optimizer state
         learning_rate = state['learning_rate']
-        optimizer = torch.optim.SGD(lr=learning_rate, params=model.parameters()).load_state_dict(state['optimizer_state'])
+        optimizer = torch.optim\
+            .SGD(lr=learning_rate, params=model.parameters())
+        optimizer.load_state_dict(state['optimizer_state'])
 
         # returning what we need to run training (or maybe evaluation)
         return model, optimizer, learning_rate, num_epochs_completed, task
 
     # if the dump does not exist, we create a model from scratch, an optimizer and return it
     if task == 'classification':
-        model = Airline_Weather_Categorical_Model(num_hidden,input_features,num_hidden_features)
+        model = Airline_Weather_Categorical_Model(num_hidden,input_features,num_hidden_features).to(device)
     elif task == 'regression':
-        model = Airline_Weather_Regression_Model(num_hidden,input_features,num_hidden_features)
+        model = Airline_Weather_Regression_Model(num_hidden,input_features,num_hidden_features).to(device)
     else:
         model = None
 
