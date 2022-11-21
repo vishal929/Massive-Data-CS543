@@ -4,8 +4,8 @@
 from tqdm import tqdm
 import torch
 from torch.utils.data import DataLoader
-from deep_learning.helper import dump_model, load_model
-from deep_learning.process_input import Airplane_Weather_Dataset
+from . import process_input
+from . import helper
 
 # function to get validation loss
 def get_validation_loss(model,data_loader,task,device):
@@ -86,12 +86,12 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
         # after a certain # of epochs we save our model to disk
         if num_epochs_completed % num_epoch_save_interval == 0:
             # then we dump the model to disk
-            dump_model(model,num_epochs_completed,optimizer,learning_rate,task,model_name)
+            helper.dump_model(model,num_epochs_completed,optimizer,learning_rate,task,model_name)
 
 
 # creating data loader for both train and validation
-train_set = Airplane_Weather_Dataset('categorical','train')
-validation_set = Airplane_Weather_Dataset('categorical','validation')
+train_set = process_input.Airplane_Weather_Dataset('categorical','train')
+validation_set = process_input.Airplane_Weather_Dataset('categorical','validation')
 
 model_name = 'test_categorical'
 task = 'categorical'
@@ -107,7 +107,7 @@ num_epoch_save_interval = 1
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 model,optimizer, learning_rate, num_epochs_completed, task = \
-    load_model(model_name,device,task,learning_rate,num_hidden,num_hidden_features,input_features,device)
+    helper.load_model(model_name,device,task,learning_rate,num_hidden,num_hidden_features,input_features,device)
 
 # sending parameters etc. to device
 
