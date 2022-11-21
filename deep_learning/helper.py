@@ -59,7 +59,7 @@ def load_model(model_name, device, task=None, learning_rate=0.3,
         optimizer.load_state_dict(state['optimizer_state'])
 
         # returning what we need to run training (or maybe evaluation)
-        return model, optimizer, learning_rate, num_epochs_completed, task,batch_size
+        return model, optimizer, learning_rate, num_epochs_completed, task, batch_size
 
     # if the dump does not exist, we create a model from scratch, an optimizer and return it
     if task == 'categorical':
@@ -72,4 +72,4 @@ def load_model(model_name, device, task=None, learning_rate=0.3,
         model = None
 
     optimizer = torch.optim.SGD(lr = learning_rate,params = model.parameters())
-    return model,optimizer, learning_rate, 0, task
+    return model,optimizer, learning_rate, 0, task, batch_size
