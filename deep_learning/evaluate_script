@@ -1,0 +1,6 @@
+#!/usr/bin/bash -l
+#SBATCH --mem=32g
+#SBATCH -o evaluate_log
+cd Desktop/massive_data/project/Massive-Data-CS543/deep_learning
+nvidia-smi
+python test.py
