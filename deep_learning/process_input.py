@@ -70,6 +70,6 @@ class Airplane_Weather_Dataset(Dataset):
         # returning (processed_record, label/target) for prediction tasks
         requested = self.records.iloc[[idx]]
 
-        record = requested.drop(columns=['DepDelay']).values
-        label = requested['DepDelay'].values
-        return torch.tensor(record,dtype=torch.float32), torch.tensor(label,dtype=torch.float32)
+        record = requested.drop(columns=['DepDelay']).to_numpy()
+        label = requested['DepDelay'].to_numpy()
+        return torch.squeeze(torch.tensor(record,dtype=torch.float32)), torch.tensor(label,dtype=torch.float32)

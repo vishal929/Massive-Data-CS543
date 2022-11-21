@@ -9,7 +9,7 @@ from standard_modules import FeedForward
 # input_features is the number of features in the input
 # hidden_features is the number of features we want for each hidden layer
 class Airline_Weather_Regression_Model(torch.nn.Module):
-    def __init__(self,num_hidden,input_features,hidden_features,batch_size):
+    def __init__(self,num_hidden,input_features,hidden_features):
         super(Airline_Weather_Regression_Model, self).__init__()
         # creating the layers we want the model to have
 
@@ -21,7 +21,7 @@ class Airline_Weather_Regression_Model(torch.nn.Module):
         )
         self.hidden_layers = torch.nn.ModuleList()
         for i in range(num_hidden):
-            self.hidden_layers.append(FeedForward(hidden_features,hidden_features,batch_size))
+            self.hidden_layers.append(FeedForward(hidden_features,hidden_features))
 
         # for regression output we want to use a linear layer so that we make 0 assumptions about the output
         self.output_layer = torch.nn.Sequential(
