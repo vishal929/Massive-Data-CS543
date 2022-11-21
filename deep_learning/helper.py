@@ -36,7 +36,7 @@ def load_model(model_name, device, task=None, learning_rate=0.3, num_hidden=3, n
         num_hidden_features = state['num_hidden_features']
         input_features = state['input_features']
         task = state['task']
-        if task == 'classification':
+        if task == 'categorical':
             # load classification model
             model = Airline_Weather_Categorical_Model(num_hidden, input_features, num_hidden_features).to(device)
             model.load_state_dict(state['model_state'])
@@ -57,7 +57,7 @@ def load_model(model_name, device, task=None, learning_rate=0.3, num_hidden=3, n
         return model, optimizer, learning_rate, num_epochs_completed, task
 
     # if the dump does not exist, we create a model from scratch, an optimizer and return it
-    if task == 'classification':
+    if task == 'categorical':
         model = Airline_Weather_Categorical_Model(num_hidden,input_features,num_hidden_features).to(device)
     elif task == 'regression':
         model = Airline_Weather_Regression_Model(num_hidden,input_features,num_hidden_features).to(device)
