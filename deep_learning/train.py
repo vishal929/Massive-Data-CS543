@@ -19,7 +19,7 @@ def get_validation_loss(model,data_loader,task,device):
                 res = model(data_record)
 
                 # calculating our loss
-                if task == 'classification':
+                if task == 'categorical':
                     # we want to use binary cross entropy loss here for classification
                     loss = torch.nn.BCELoss(res, target)
                 elif task == 'regression':
@@ -58,7 +58,7 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
                 optimizer.zero_grad()
 
                 # calculating our loss
-                if task == 'classification':
+                if task == 'categorical':
                     # we want to use binary cross entropy loss here for classification
                     loss = torch.nn.BCELoss(res,target)
                 elif task == 'regression':
