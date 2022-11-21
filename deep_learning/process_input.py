@@ -64,7 +64,7 @@ class Airplane_Weather_Dataset(Dataset):
 
     def __getitem__(self, idx):
         # returning (processed_record, label/target) for prediction tasks
-        requested = self.record.iloc[[idx]]
+        requested = self.records.iloc[[idx]]
         # we need to drop the "elapsedTime" column because that is something the network cannot know in advance
         # we can drop the record_id column, no need for that in our training or testing
         record = requested.drop(['DepDelay', 'ActualElapsedTime', 'record_id']).values
