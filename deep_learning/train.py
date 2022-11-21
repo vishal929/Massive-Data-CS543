@@ -2,11 +2,34 @@
 
 # we use tqdm to provide a progress bar type interface
 from tqdm import tqdm
-import torch.nn as nn
+import torch
 from helper import dump_model, load_model
+from process_input import Airline_Weather_Dataset
 
+# function to get validation loss
+def get_validation_loss(model,data_loader,task):
+    val_loss = 0
+    with torch.no_grad():
+        with tqdm(data_loader, unit='batch') as data:
+            for data_record, label in data:
+                target = None
+                # we have our training data, running the model
+                res = model(data_record)
 
-# function to save a model to disk
+                # calculating our loss
+                if task == 'classification':
+                    # we want to use binary cross entropy loss here for classification
+                    loss = torch.nn.BCELoss(res, target)
+                elif task == 'regression':
+                    # we want to use mean squared error loss here for regression
+                    loss = torch.nn.MSELoss(res, target)
+                else:
+                    # bad case
+                    loss = None
+                val_loss += loss
+    # returning the loss
+    return val_loss
+
 
 # train function
 # we input our model, dataloader, current epochs and number of epochs total we want to run it for
@@ -14,15 +37,18 @@ from helper import dump_model, load_model
 # we include an optimizer for actually performing the descent
 # we provide a save interval for the model (i.e every 5 epochs save the model to disk)
 # we pass a model_name so that we can dump it to some file and save progress
-def train(model, data_loader, num_epochs_completed, num_epochs_total, num_epoch_save_interval, task, optimizer, model_name):
+def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_total, num_epoch_save_interval,
+          task, optimizer, model_name):
 
     # number of epochs
     for i in tqdm(range(num_epochs_completed,num_epochs_total)):
+        train_loss = 0
+        val_loss = None
         with tqdm(data_loader,unit='batch') as data:
             for data_record,label in data:
                 target = None
                 # we have our training data, running the model
-                res = model.forward(data_record)
+                res = model(data_record)
 
                 # zeroing grad before descent
                 optimizer.zero_grad()
@@ -30,19 +56,29 @@ def train(model, data_loader, num_epochs_completed, num_epochs_total, num_epoch_
                 # calculating our loss
                 if task == 'classification':
                     # we want to use binary cross entropy loss here for classification
-                    loss = nn.BCELoss(res,target)
+                    loss = torch.nn.BCELoss(res,target)
                 elif task == 'regression':
                     # we want to use mean squared error loss here for regression
-                    loss = nn.MSELoss(res,target)
+                    loss = torch.nn.MSELoss(res,target)
                 else:
                     # bad case
                     loss = None
-
+                train_loss += loss
                 # calling backward and step to update weights according to loss
                 loss.backward()
                 optimizer.step()
-
         num_epochs_completed += 1
+        print('train_loss on epoch:' + str(num_epochs_completed)+', loss: ' + str(train_loss))
+        # getting validation loss (if this is worse than our last validation loss we stop)
+        new_val_loss = get_validation_loss(model,val_data_loader,task)
+        print('validation loss on epoch:' + str(num_epochs_completed) + ', loss: ' + str(val_loss))
+        if val_loss is not None and new_val_loss > val_loss:
+            # our model is doing worse on validation data, we will stop here!
+            print('validation loss was worse than last one! We will stop training here!')
+            return
+
+        # updating validation loss for next epoch
+        val_loss = new_val_loss
 
         # after a certain # of epochs we save our model to disk
         if num_epochs_completed % num_epoch_save_interval == 0:
@@ -50,7 +86,7 @@ def train(model, data_loader, num_epochs_completed, num_epochs_total, num_epoch_
             dump_model(model,num_epochs_completed,optimizer,learning_rate,task,model_name)
 
 
-# creating data loader
+# creating data loader for both train and validation
 data_loader = None
 
 model_name = 'test_categorical'
@@ -60,8 +96,8 @@ num_hidden = 3
 num_hidden_features = 500
 input_features = 15
 
-num_epochs_total = 200
-num_epoch_save_interval = 5
+num_epochs_total = 100
+num_epoch_save_interval = 1
 
 model,optimizer, learning_rate, num_epochs_completed, task = \
     load_model(model_name,task,learning_rate,num_hidden,num_hidden_features,input_features)
