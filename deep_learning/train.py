@@ -3,6 +3,7 @@
 # we use tqdm to provide a progress bar type interface
 from tqdm import tqdm
 import torch
+from torch.utils.data import DataLoader
 from helper import dump_model, load_model
 from process_input import Airline_Weather_Dataset
 
@@ -87,7 +88,8 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
 
 
 # creating data loader for both train and validation
-data_loader = None
+train_set = Airline_Weather_Dataset('categorical','train')
+validation_set = Airline_Weather_Dataset('categorical','validation')
 
 model_name = 'test_categorical'
 task = 'categorical'
@@ -95,12 +97,25 @@ learning_rate = 0.3
 num_hidden = 3
 num_hidden_features = 500
 input_features = 15
+batch_size = 64
 
 num_epochs_total = 100
 num_epoch_save_interval = 1
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 model,optimizer, learning_rate, num_epochs_completed, task = \
     load_model(model_name,task,learning_rate,num_hidden,num_hidden_features,input_features)
 
+# sending parameters etc. to device
+
+# creating dataloaders
+# we should shuffle our train data to vary from epoch to epoch
+data_loader = DataLoader(train_set,batch_size=batch_size,shuffle=True)
+
+# we dont need to shuffle validation data since its only used for evaluation
+val_data_loader = DataLoader(validation_set,batch_size=batch_size)
+
 # now we can call train
-train(model,data_loader,num_epochs_completed,num_epochs_total,num_epoch_save_interval,task,optimizer,model_name)
+train(model,data_loader,val_data_loader,num_epochs_completed,num_epochs_total,num_epoch_save_interval,
+      task,optimizer,model_name)

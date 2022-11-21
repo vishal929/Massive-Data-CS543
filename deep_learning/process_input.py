@@ -7,6 +7,7 @@
 # pandas to work with parquets
 import pandas as pd
 # pytorch dataset is our desired output
+import torch
 from torch.utils.data import Dataset
 # sklearn train_test_split will be useful for initially splitting the data
 from sklearn.model_selection import train_test_split
@@ -47,7 +48,7 @@ def process_dataset(is_categorical):
 
 # creating a custom pytorch dataset for our tasks
 class Airplane_Weather_Dataset(Dataset):
-    # standard transform is mean stddev normalization
+    # standard transform is max min
     def __init__(self, task, split):
         self.records = pd.read_parquet(task+'_'+split)
         self.records_max = self.records.max()
@@ -64,4 +65,6 @@ class Airplane_Weather_Dataset(Dataset):
         requested = self.record.iloc[[idx]]
         # we need to drop the "elapsedTime" column because that is something the network cannot know in advance
         # we can drop the record_id column, no need for that in our training or testing
-        return requested.drop(['DepDelay','ActualElapsedTime','record_id']), requested['DepDelay']
+        record = requested.drop(['DepDelay','ActualElapsedTime','record_id']).values
+        label = requested['DepDelay'].values
+        return record,label
