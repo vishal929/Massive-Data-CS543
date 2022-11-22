@@ -32,6 +32,7 @@ def get_validation_loss(model,data_loader,task,device):
                     # bad case
                     loss = None
                 val_loss += loss
+    print('got val_loss: ' + str(val_loss))
     # returning the loss
     return val_loss
 
