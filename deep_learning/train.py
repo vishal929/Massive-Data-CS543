@@ -101,7 +101,7 @@ learning_rate = 0.3
 num_hidden = 3
 num_hidden_features = 30
 input_features = 15
-batch_size = 2048
+batch_size = 512
 
 num_epochs_total = 100
 num_epoch_save_interval = 1
