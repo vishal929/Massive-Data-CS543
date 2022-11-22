@@ -86,7 +86,7 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
         print('train_loss on epoch:' + str(num_epochs_completed)+', loss: ' + str(train_loss))
         # getting validation loss (if this is worse than our last validation loss we stop)
         new_val_loss = get_validation_loss(model,val_data_loader,task,device)
-        print('validation loss on epoch:' + str(num_epochs_completed) + ', loss: ' + str(val_loss))
+
         if val_loss is not None and new_val_loss > val_loss:
             # our model is doing worse on validation data, we will stop here!
             print('validation loss was worse than last one! We will stop training here!')
@@ -94,6 +94,7 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
 
         # updating validation loss for next epoch
         val_loss = new_val_loss
+        print('validation loss on epoch:' + str(num_epochs_completed) + ', loss: ' + str(val_loss))
 
         # after a certain # of epochs we save our model to disk
         if num_epochs_completed % num_epoch_save_interval == 0:
