@@ -43,6 +43,7 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
           task, optimizer, model_name, device):
 
     # number of epochs
+    memory_usage_printed = False
     for i in tqdm(range(num_epochs_completed,num_epochs_total)):
         train_loss = 0
         val_loss = None
@@ -50,6 +51,11 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
             for data_record,label in data:
                 data_record = data_record.to(device)
                 target = label.to(device)
+                if not memory_usage_printed:
+                    print("torch.cuda.memory_allocated: %fGB" % (torch.cuda.memory_allocated(0) / 1024 / 1024 / 1024))
+                    print("torch.cuda.memory_reserved: %fGB" % (torch.cuda.memory_reserved(0) / 1024 / 1024 / 1024))
+                    print("torch.cuda.max_memory_reserved: %fGB" % (torch.cuda.max_memory_reserved(0) / 1024 / 1024 / 1024))
+                    memory_usage_printed = True
                 # we have our training data, running the model
                 res = model(data_record)
 
@@ -101,7 +107,7 @@ learning_rate = 0.3
 num_hidden = 3
 num_hidden_features = 30
 input_features = 15
-batch_size = 512
+batch_size = 256
 
 num_epochs_total = 100
 num_epoch_save_interval = 1
