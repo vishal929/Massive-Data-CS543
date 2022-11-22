@@ -10,6 +10,10 @@ from standard_modules import FeedForward
 # hidden_features is the number of features we want for each hidden layer
 class Airline_Weather_Regression_Model(torch.nn.Module):
     def __init__(self,num_hidden,input_features,hidden_features):
+        self.input_features = input_features
+        self.num_hidden_features = hidden_features
+        self.num_hidden = num_hidden
+
         super(Airline_Weather_Regression_Model, self).__init__()
         # creating the layers we want the model to have
 
