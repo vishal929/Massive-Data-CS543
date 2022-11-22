@@ -102,6 +102,9 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
             # then we dump the model to disk
             dump_model(model,num_epochs_completed,optimizer,learning_rate,task,model_name)
 
+        if num_epochs_completed == num_epochs_total:
+            print('we hit the epoch limit... we will stop training!')
+
 
 # creating data loader for both train and validation
 train_set = Airplane_Weather_Dataset('categorical','train')
