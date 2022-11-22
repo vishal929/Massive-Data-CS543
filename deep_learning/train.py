@@ -118,7 +118,7 @@ learning_rate = 0.3
 num_hidden = 3
 num_hidden_features = 30
 input_features = 15
-batch_size = 2097152
+batch_size = 16777216
 
 num_epochs_total = 100
 num_epoch_save_interval = 1
@@ -135,10 +135,10 @@ print('our model has : ' + str(num_epochs_completed) + ' num epochs already comp
 
 # creating dataloaders
 # we should shuffle our train data to vary from epoch to epoch
-data_loader = DataLoader(train_set,batch_size=batch_size,shuffle=True,num_workers=4)
+data_loader = DataLoader(train_set,batch_size=batch_size,shuffle=True,num_workers=8)
 
 # we dont need to shuffle validation data since its only used for evaluation
-val_data_loader = DataLoader(validation_set,batch_size=batch_size, num_workers=4)
+val_data_loader = DataLoader(validation_set,batch_size=batch_size, num_workers=8)
 
 print('created our data loaders! Lets start training...')
 
