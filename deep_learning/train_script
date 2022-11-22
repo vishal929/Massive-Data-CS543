@@ -1,6 +1,5 @@
 #!/usr/bin/bash -l
-#SBATCH --mem=32g
-#SBATCH -o Desktop/massive_data/project/Massive-Data-CS543/deep_learning/train_log
+
 cd Desktop/massive_data/project/Massive-Data-CS543/deep_learning
 nvidia-smi
 python train.py
