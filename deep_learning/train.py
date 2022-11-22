@@ -126,6 +126,7 @@ model,optimizer, learning_rate, num_epochs_completed, task= \
     load_model(model_name,device,task,learning_rate,num_hidden,num_hidden_features,input_features)
 
 print('loaded our model and optimizer!')
+print('our model has : ' + str(num_epochs_completed) + ' num epochs already completed!')
 
 # sending parameters etc. to device
 
