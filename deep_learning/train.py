@@ -18,6 +18,9 @@ def get_validation_loss(model,data_loader,task,device):
                 # we have our training data, running the model
                 res = model(data_record)
 
+                # we have (batch,output=1) so lets just squeeze this to (batch)
+                res = torch.squeeze(res)
+
                 # calculating our loss
                 if task == 'categorical':
                     # we want to use binary cross entropy loss here for classification
@@ -58,6 +61,9 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
                     memory_usage_printed = True
                 # we have our training data, running the model
                 res = model(data_record)
+
+                # we have (batch,output) so lets just squeeze this
+                res = torch.squeeze(res)
 
                 # zeroing grad before descent
                 optimizer.zero_grad()
@@ -107,7 +113,7 @@ learning_rate = 0.3
 num_hidden = 3
 num_hidden_features = 30
 input_features = 15
-batch_size = 8192
+batch_size = 1048576
 
 num_epochs_total = 100
 num_epoch_save_interval = 1
