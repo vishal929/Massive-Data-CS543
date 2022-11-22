@@ -48,9 +48,9 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
 
     # number of epochs
     memory_usage_printed = False
+    val_loss = None
     for i in tqdm(range(num_epochs_completed,num_epochs_total)):
         train_loss = 0
-        val_loss = None
         with tqdm(data_loader,unit='batch') as data:
             for data_record,label in data:
                 data_record = data_record.to(device)
