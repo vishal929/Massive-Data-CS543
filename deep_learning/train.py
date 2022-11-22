@@ -99,7 +99,7 @@ model_name = 'test_categorical'
 task = 'categorical'
 learning_rate = 0.3
 num_hidden = 3
-num_hidden_features = 500
+num_hidden_features = 30
 input_features = 15
 batch_size = 1024
 
