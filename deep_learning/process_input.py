@@ -63,13 +63,15 @@ class Airplane_Weather_Dataset(Dataset):
         # min-max scaling
         self.records = (self.records - self.records_min) / (self.records_max - self.records_min)
 
+        # turning data into tensors ready for training
+        self.labels = torch.tensor(self.records['DepDelay'].to_numpy(),dtype=torch.float32)
+        self.records = self.records.drop(columns=['DepDelay']).to_numpy()
+        self.records = torch.squeeze(torch.tensor(self.records,dtype=torch.float32))
+
+
     def __len__(self):
         return len(self.records)
 
     def __getitem__(self, idx):
         # returning (processed_record, label/target) for prediction tasks
-        requested = self.records.iloc[[idx]]
-
-        record = requested.drop(columns=['DepDelay']).to_numpy()
-        label = requested['DepDelay'].to_numpy()
-        return torch.squeeze(torch.tensor(record,dtype=torch.float32)), torch.tensor(label,dtype=torch.float32)
+        return self.records[idx],self.labels[idx]
