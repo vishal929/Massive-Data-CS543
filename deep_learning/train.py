@@ -123,10 +123,10 @@ print('loaded our model and optimizer!')
 
 # creating dataloaders
 # we should shuffle our train data to vary from epoch to epoch
-data_loader = DataLoader(train_set,batch_size=batch_size,shuffle=True,num_workers=4)
+data_loader = DataLoader(train_set,batch_size=batch_size,shuffle=True,num_workers=2)
 
 # we dont need to shuffle validation data since its only used for evaluation
-val_data_loader = DataLoader(validation_set,batch_size=batch_size, num_workers=4)
+val_data_loader = DataLoader(validation_set,batch_size=batch_size, num_workers=2)
 
 print('created our data loaders! Lets start training...')
 
