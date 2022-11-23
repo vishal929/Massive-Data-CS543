@@ -56,7 +56,7 @@ def evaluate(model,data_loader,task,device):
 batch_size = 4194304
 task = 'categorical'
 dataset = Airplane_Weather_Dataset(task,'test')
-data_loader = DataLoader(dataset,batch_size=100)
+data_loader = DataLoader(dataset,batch_size=batch_size,num_workers=8)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
