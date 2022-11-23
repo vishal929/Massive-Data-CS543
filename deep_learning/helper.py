@@ -36,7 +36,7 @@ def load_model(model_name, device, task=None, learning_rate=0.3,
         num_epochs_completed = state['num_epochs_completed']
         num_hidden = state['num_hidden']
         num_hidden_features = state['num_hidden_features']
-        input_features = state['input_features:']
+        input_features = state['input_features']
         task = state['task']
         if task == 'categorical':
             # load classification model
