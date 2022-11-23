@@ -34,6 +34,8 @@ def evaluate(model,data_loader,task,device):
                 res = torch.squeeze(res)
 
                 if task == 'categorical':
+                    print(res.shape)
+                    print(target.shape)
                     loss += torch.nn.BCELoss(res,target)
                     # adding the batch size to the num_total, because we make batch_size guesses
                     num_total += record.shape[0]
