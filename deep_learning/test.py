@@ -34,15 +34,11 @@ def evaluate(model,data_loader,task,device):
                 res = torch.squeeze(res)
 
                 if task == 'categorical':
-                    print(res.shape)
-                    print(target.shape)
-                    loss += torch.nn.BCELoss(res,target)
+                    loss += torch.nn.BCELoss()(res,target)
                     # adding the batch size to the num_total, because we make batch_size guesses
                     num_total += record.shape[0]
                     guesses = torch.round(res)
-                    print(guesses.shape)
-                    print(target.shape)
-                    num_correct += torch.sum(target == guesses)
+                    num_correct += torch.sum(target == guesses,dtype=torch.int32)
 
                 elif task == 'regression':
                     loss += torch.nn.MSELoss(res,target)
