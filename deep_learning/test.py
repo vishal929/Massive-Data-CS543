@@ -12,6 +12,9 @@ from process_input import Airplane_Weather_Dataset
 # for categorical, we can output loss and accuracy
 # for regression we just output the MSE (mean squared error)
 def evaluate(model,data_loader,task,device):
+    # setting the model to evaluate mode
+    model.eval()
+
     loss = 0
     if task == 'categorical':
         # we also would like to see accuracy here
@@ -26,6 +29,9 @@ def evaluate(model,data_loader,task,device):
                 record = record.to(device)
                 target = target.to(device)
                 res = model(record)
+
+                # we have observations of (batch_size,1) so lets just squeeze this
+                res = torch.squeeze(res)
 
                 if task == 'categorical':
                     loss += torch.nn.BCELoss(res,target)
@@ -42,9 +48,12 @@ def evaluate(model,data_loader,task,device):
         print('categorical accuracy: ' + str(accuracy))
     elif task == 'regression':
         print('regression loss: ' + str(loss))
+    # setting model back to training mode (in case this is used for something else)
+    model.train()
 
 
 # getting data loader for test data
+batch_size = 4194304
 task = 'categorical'
 dataset = Airplane_Weather_Dataset(task,'test')
 data_loader = DataLoader(dataset,batch_size=100)
@@ -53,8 +62,10 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # loading model from disk
 model_name = 'test_categorical'
-model = load_model(model_name,device)
+model, _, lr, num_epochs_completed, task = load_model(model_name,device)
 
+print('loaded model: ' + str(model_name) + ' with learning rate: ' + str(lr) + \
+      ' with num epochs completed: ' + str(num_epochs_completed))
 
 # calling evaluate
 evaluate(model,data_loader,task,device)

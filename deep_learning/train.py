@@ -10,6 +10,8 @@ from helper import dump_model, load_model
 # function to get validation loss
 def get_validation_loss(model,data_loader,task,device):
     val_loss = 0
+    # setting the model to evaluate mode (we do not want dropout when evaluating)
+    model.eval()
     with torch.no_grad():
         with tqdm(data_loader, unit='batch') as data:
             for data_record, label in data:
@@ -33,6 +35,9 @@ def get_validation_loss(model,data_loader,task,device):
                     loss = None
                 val_loss += loss
     print('got val_loss: ' + str(val_loss))
+
+    # returning the model to training mode
+    model.train()
     # returning the loss
     return val_loss
 
@@ -83,6 +88,10 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
                 # calling backward and step to update weights according to loss
                 loss.backward()
                 optimizer.step()
+
+                # removing the batch from memory
+                del data_record
+                del target
         num_epochs_completed += 1
         print('train_loss on epoch:' + str(num_epochs_completed)+', loss: ' + str(train_loss))
         # getting validation loss (if this is worse than our last validation loss we stop)
