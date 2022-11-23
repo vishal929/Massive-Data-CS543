@@ -32,7 +32,7 @@ def load_model(model_name, device, task=None, learning_rate=0.3,
     if os.path.exists(model_name + '.pth'):
         # then the model is dumped, we can load it
         state = torch.load(model_name + '.pth')
-        print(state)
+        #print(state)
         num_epochs_completed = state['num_epochs_completed']
         num_hidden = state['num_hidden']
         num_hidden_features = state['num_hidden_features']

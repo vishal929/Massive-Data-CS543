@@ -38,6 +38,8 @@ def evaluate(model,data_loader,task,device):
                     # adding the batch size to the num_total, because we make batch_size guesses
                     num_total += record.shape[0]
                     guesses = torch.round(res)
+                    print(guesses.shape)
+                    print(target.shape)
                     num_correct += torch.sum(target == guesses)
 
                 elif task == 'regression':
