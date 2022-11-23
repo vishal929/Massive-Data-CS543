@@ -55,7 +55,7 @@ def evaluate(model,data_loader,task,device):
 
 
 # getting data loader for test data
-batch_size = 4194304
+batch_size = 12
 task = 'categorical'
 dataset = Airplane_Weather_Dataset(task,'test')
 data_loader = DataLoader(dataset,batch_size=batch_size,num_workers=8)
