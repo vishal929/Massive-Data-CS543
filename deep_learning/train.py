@@ -34,6 +34,9 @@ def get_validation_loss(model,data_loader,task,device):
                     # bad case
                     loss = None
                 val_loss += loss
+
+                del data_record
+                del target
     print('got val_loss: ' + str(val_loss))
 
     # returning the model to training mode
