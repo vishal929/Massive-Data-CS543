@@ -130,7 +130,7 @@ learning_rate = 0.02
 num_hidden = 3
 num_hidden_features = 300
 input_features = 15
-batch_size = 4194304
+batch_size = 2097152
 
 num_epochs_total = 400
 num_epoch_save_interval = 1
