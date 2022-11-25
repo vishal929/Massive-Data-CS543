@@ -124,15 +124,15 @@ validation_set = Airplane_Weather_Dataset('categorical','validation')
 
 print('obtained our training and validation sets!')
 
-model_name = 'test_categorical_2'
+model_name = 'test_categorical_3'
 task = 'categorical'
 learning_rate = 0.02
 num_hidden = 3
-num_hidden_features = 30
+num_hidden_features = 300
 input_features = 15
 batch_size = 4194304
 
-num_epochs_total = 100
+num_epochs_total = 400
 num_epoch_save_interval = 1
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
