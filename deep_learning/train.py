@@ -57,6 +57,9 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
     # number of epochs
     memory_usage_printed = False
     val_loss = None
+    # basically if there are 5 consecutive epochs where validation loss is worse, we stop
+    early_stopping_patience = 5
+    early_stopping_count = 0
     for i in tqdm(range(num_epochs_completed,num_epochs_total)):
         train_loss = 0
         with tqdm(data_loader,unit='batch') as data:
@@ -101,9 +104,12 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
         new_val_loss = get_validation_loss(model,val_data_loader,task,device)
 
         if val_loss is not None and new_val_loss > val_loss:
-            # our model is doing worse on validation data, we will stop here!
-            print('validation loss was worse than last one! We will stop training here!')
-            return
+            early_stopping_count += 1
+            if early_stopping_count == early_stopping_patience:
+                # our model is doing worse on validation data, we will stop here!
+                print('validation loss was worse than last one for our patience! We will stop training here!')
+                return
+        early_stopping_count = 0
 
         # updating validation loss for next epoch
         val_loss = new_val_loss
