@@ -52,13 +52,16 @@ class Airplane_Weather_Dataset(Dataset):
     # standard transform is max min
     def __init__(self, task, split):
         super(Airplane_Weather_Dataset, self).__init__()
+        # we need to normalize by train data, not validation or test data (or else we are "leaking" information)
+        train_records = pd.read_parquet(task+'_'+'train')
         self.records = pd.read_parquet(task + '_' + split)
 
         # dropping ActualElapsedTime column because that is cheating (looking into future)
         # also dropping record_id column
+        train_records.drop(columns=['ActualElapsedTime','record_id'],inplace=True)
         self.records.drop(columns=['ActualElapsedTime','record_id'],inplace=True)
-        self.records_max = self.records.max()
-        self.records_min = self.records.min()
+        self.records_max = train_records.max()
+        self.records_min = train_records.min()
 
         # min-max scaling
         self.records = (self.records - self.records_min) / (self.records_max - self.records_min)
