@@ -132,7 +132,7 @@ print('obtained our training and validation sets!')
 
 model_name = 'test_categorical_3'
 task = 'categorical'
-learning_rate = 0.02
+learning_rate = 0.1
 num_hidden = 3
 num_hidden_features = 300
 input_features = 15
