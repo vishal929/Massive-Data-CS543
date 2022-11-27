@@ -138,7 +138,7 @@ num_hidden_features = 300
 input_features = 15
 batch_size = 524288
 
-num_epochs_total = 400
+num_epochs_total = 600
 num_epoch_save_interval = 1
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
