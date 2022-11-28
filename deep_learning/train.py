@@ -6,6 +6,12 @@ import torch
 from torch.utils.data import DataLoader
 from process_input import Airplane_Weather_Dataset
 from helper import dump_model, load_model
+import pandas as pd
+
+# saving train losses and validation losses to text file (for later graphing)
+def save_losses(train_losses,val_losses):
+    df = pd.DataFrame(list(zip(train_losses,val_losses)),columns=['train_loss','val_loss'])
+    df.to_csv('./training_history.csv')
 
 # function to get validation loss
 def get_validation_loss(model,data_loader,task,device):
@@ -60,6 +66,9 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
     # basically if there are 5 consecutive epochs where validation loss is worse, we stop
     early_stopping_patience = 5
     early_stopping_count = 0
+    # keeping track of train losses and val losses for every epoch
+    train_losses = []
+    val_losses = []
     for i in tqdm(range(num_epochs_completed,num_epochs_total)):
         train_loss = 0
         with tqdm(data_loader,unit='batch') as data:
@@ -103,11 +112,16 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
         # getting validation loss (if this is worse than our last validation loss we stop)
         new_val_loss = get_validation_loss(model,val_data_loader,task,device)
 
+        train_losses.append(train_loss)
+        val_losses.append(new_val_loss)
+
         if val_loss is not None and new_val_loss > val_loss:
             early_stopping_count += 1
             if early_stopping_count == early_stopping_patience:
                 # our model is doing worse on validation data, we will stop here!
                 print('validation loss was worse than last one for our patience! We will stop training here!')
+                # saving our train losses and val losses to some txt file
+                save_losses(train_losses,val_losses)
                 return
         early_stopping_count = 0
 
@@ -122,6 +136,8 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
 
         if num_epochs_completed == num_epochs_total:
             print('we hit the epoch limit... we will stop training!')
+            # saving losses to csv
+            save_losses(train_losses,val_losses)
 
 
 # creating data loader for both train and validation
