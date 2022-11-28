@@ -146,9 +146,9 @@ validation_set = Airplane_Weather_Dataset('categorical','validation')
 
 print('obtained our training and validation sets!')
 
-model_name = 'test_categorical_4'
+model_name = 'test_categorical_5'
 task = 'categorical'
-learning_rate = 0.1
+learning_rate = 0.2
 num_hidden = 3
 num_hidden_features = 300
 input_features = 15

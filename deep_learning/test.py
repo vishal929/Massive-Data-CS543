@@ -61,7 +61,7 @@ data_loader = DataLoader(dataset,batch_size=batch_size,num_workers=8)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # loading model from disk
-model_name = 'test_categorical_4'
+model_name = 'test_categorical_5'
 model, _, lr, num_epochs_completed, task = load_model(model_name,device)
 
 print('loaded model: ' + str(model_name) + ' with learning rate: ' + str(lr) + \
