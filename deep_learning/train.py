@@ -141,8 +141,8 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
 
 
 # creating data loader for both train and validation
-train_set = Airplane_Weather_Dataset('categorical','train')
-validation_set = Airplane_Weather_Dataset('categorical','validation')
+train_set = Airplane_Weather_Dataset('regression','train')
+validation_set = Airplane_Weather_Dataset('regression','validation')
 
 print('obtained our training and validation sets!')
 
