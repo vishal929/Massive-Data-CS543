@@ -54,14 +54,14 @@ def evaluate(model,data_loader,task,device):
 
 # getting data loader for test data
 batch_size = 524288
-task = 'categorical'
+task = 'regression'
 dataset = Airplane_Weather_Dataset(task,'test')
 data_loader = DataLoader(dataset,batch_size=batch_size,num_workers=8)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # loading model from disk
-model_name = 'test_categorical_5'
+model_name = 'test_regression'
 model, _, lr, num_epochs_completed, task = load_model(model_name,device)
 
 print('loaded model: ' + str(model_name) + ' with learning rate: ' + str(lr) + \
