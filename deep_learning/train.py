@@ -112,8 +112,8 @@ def train(model, data_loader, val_data_loader, num_epochs_completed, num_epochs_
         # getting validation loss (if this is worse than our last validation loss we stop)
         new_val_loss = get_validation_loss(model,val_data_loader,task,device)
 
-        train_losses.append(train_loss)
-        val_losses.append(new_val_loss)
+        train_losses.append(train_loss.item())
+        val_losses.append(new_val_loss.item())
 
         if val_loss is not None and new_val_loss > val_loss:
             early_stopping_count += 1
