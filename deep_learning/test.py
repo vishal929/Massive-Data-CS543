@@ -16,13 +16,10 @@ def evaluate(model,data_loader,task,device):
     model.eval()
 
     loss = 0
-    if task == 'categorical':
-        # we also would like to see accuracy here
-        num_total = 0
-        num_correct = 0
-    else:
-        num_total = None
-        num_correct = None
+
+    # we also would like to see accuracy here
+    num_total = 0
+    num_correct = 0
     with torch.no_grad():
         with tqdm(data_loader,unit='batch') as data:
             for record,target in data:
@@ -42,12 +39,20 @@ def evaluate(model,data_loader,task,device):
 
                 elif task == 'regression':
                     loss += torch.nn.MSELoss()(res,target)
+                    # we also want to see if the regression model offers powerful categorical predictions!
+                    num_total += record.shape[0]
+                    # we have false if the ouput is zero or less and true if greater
+                    guesses = res > 0
+                    actual = target > 0
+                    num_correct += torch.sum((guesses == actual).long())
     if task == 'categorical':
         accuracy = num_correct/num_total
         print('categorical loss: ' + str(loss))
         print('categorical accuracy: ' + str(accuracy))
     elif task == 'regression':
         print('regression loss: ' + str(loss))
+        cat_accuracy = num_correct/num_total
+        print('regression model as categorical predictor accuracy: ' + str(cat_accuracy))
     # setting model back to training mode (in case this is used for something else)
     model.train()
 
@@ -61,7 +66,7 @@ data_loader = DataLoader(dataset,batch_size=batch_size,num_workers=8)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # loading model from disk
-model_name = 'test_regression'
+model_name = 'test_regression_2'
 model, _, lr, num_epochs_completed, task = load_model(model_name,device)
 
 print('loaded model: ' + str(model_name) + ' with learning rate: ' + str(lr) + \
