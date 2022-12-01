@@ -41,7 +41,7 @@ def evaluate(model,data_loader,task,device):
                     num_correct += torch.sum((target == guesses).long())
 
                 elif task == 'regression':
-                    loss += torch.nn.MSELoss(res,target)
+                    loss += torch.nn.MSELoss()(res,target)
     if task == 'categorical':
         accuracy = num_correct/num_total
         print('categorical loss: ' + str(loss))
