@@ -56,6 +56,37 @@ def evaluate(model,data_loader,task,device):
     # setting model back to training mode (in case this is used for something else)
     model.train()
 
+# we are interested to see if the regression model can get the outputs correct for any categorical set
+# basically we are using a regression model (which should be more powerful) for the categorical task
+def special_evaluate_regression():
+    # setting the model to evaluate mode
+    print('we are running special categorical testing of a regression model!')
+    model.eval()
+
+    # we also would like to see accuracy here
+    num_total = 0
+    num_correct = 0
+    with torch.no_grad():
+        with tqdm(data_loader, unit='batch') as data:
+            for record, target in data:
+                record = record.to(device)
+                target = target.to(device)
+                res = model(record)
+
+                # we have observations of (batch_size,1) so lets just squeeze this
+                res = torch.squeeze(res)
+
+                # we want to see if the regression model offers powerful categorical predictions!
+                num_total += record.shape[0]
+                # we have false if the output is zero or less and true if greater
+                guesses = res > 0
+                actual = target > 0
+                num_correct += torch.sum((guesses == actual).long())
+
+    cat_accuracy = num_correct / num_total
+    print('regression model as categorical predictor accuracy: ' + str(cat_accuracy))
+    # setting model back to training mode (in case this is used for something else)
+    model.train()
 
 # getting data loader for test data
 batch_size = 524288
