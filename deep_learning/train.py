@@ -146,9 +146,9 @@ validation_set = Airplane_Weather_Dataset('regression','validation')
 
 print('obtained our training and validation sets!')
 
-model_name = 'test_regression_2'
+model_name = 'test_regression_3'
 task = 'regression'
-learning_rate = 0.1
+learning_rate = 0.02
 num_hidden = 5
 num_hidden_features = 300
 input_features = 15

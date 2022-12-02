@@ -52,7 +52,7 @@ def evaluate(model,data_loader,task,device):
     elif task == 'regression':
         print('regression loss: ' + str(loss))
         cat_accuracy = num_correct/num_total
-        print('regression model as categorical predictor accuracy: ' + str(cat_accuracy))
+        #print('regression model as categorical predictor accuracy: ' + str(cat_accuracy))
     # setting model back to training mode (in case this is used for something else)
     model.train()
 
@@ -66,7 +66,7 @@ data_loader = DataLoader(dataset,batch_size=batch_size,num_workers=8)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # loading model from disk
-model_name = 'test_regression_2'
+model_name = 'test_regression_3'
 model, _, lr, num_epochs_completed, task = load_model(model_name,device)
 
 print('loaded model: ' + str(model_name) + ' with learning rate: ' + str(lr) + \
