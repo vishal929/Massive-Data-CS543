@@ -3,6 +3,7 @@
 from tqdm import tqdm
 from helper import load_model
 import torch
+import numpy as np
 from torch.utils.data import DataLoader
 from process_input import Airplane_Weather_Dataset
 
@@ -102,6 +103,12 @@ model, _, lr, num_epochs_completed, task = load_model(model_name,device)
 
 print('loaded model: ' + str(model_name) + ' with learning rate: ' + str(lr) + \
       ' with num epochs completed: ' + str(num_epochs_completed))
+
+# we want to see the number of trainable parameters
+model_parameters = filter(lambda parameter: parameter.requires_grad, model.parameters())
+num_params = sum([np.prod(parameter.size()) for parameter in model_parameters])
+print('the model has: ' + str(num_params) + ' number of trainable parameters!')
+
 
 # calling evaluate
 evaluate(model,data_loader,task,device)
