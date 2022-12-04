@@ -6,6 +6,7 @@ import torch
 import numpy as np
 from torch.utils.data import DataLoader
 from process_input import Airplane_Weather_Dataset
+import pandas as pd
 
 # we provide the model_name, data_loader for test data
 # the task is specified in the model dump so no need to specify it as a parameter
@@ -17,7 +18,8 @@ def evaluate(model,data_loader,task,device):
     model.eval()
 
     loss = 0
-
+    guesses = []
+    actual = []
     # we also would like to see accuracy here
     num_total = 0
     num_correct = 0
@@ -30,6 +32,8 @@ def evaluate(model,data_loader,task,device):
 
                 # we have observations of (batch_size,1) so lets just squeeze this
                 res = torch.squeeze(res)
+
+
 
                 if task == 'categorical':
                     loss += torch.nn.BCELoss()(res,target)
@@ -46,6 +50,9 @@ def evaluate(model,data_loader,task,device):
                     guesses = res > 0
                     actual = target > 0
                     num_correct += torch.sum((guesses == actual).long())
+
+                guesses.extend(res.tolist())
+                actual.extend(target.tolist())
     if task == 'categorical':
         accuracy = num_correct/num_total
         print('categorical loss: ' + str(loss))
@@ -56,38 +63,29 @@ def evaluate(model,data_loader,task,device):
         #print('regression model as categorical predictor accuracy: ' + str(cat_accuracy))
     # setting model back to training mode (in case this is used for something else)
     model.train()
+    return guesses,actual
 
-# we are interested to see if the regression model can get the outputs correct for any categorical set
-# basically we are using a regression model (which should be more powerful) for the categorical task
-def special_evaluate_regression():
-    # setting the model to evaluate mode
-    print('we are running special categorical testing of a regression model!')
-    model.eval()
+# for regression, we want to not only see loss,  but within 5-minute accuracy and within 10-minute accuracy
+# in addition, we want to just observe the first five guesses and the first five actual targets (for reporting)
+def get_attributes_for_regression(guesses,actual):
+    data = pd.DataFrame(data=[guesses,actual],columns=['predicted','actual'])
+    # we want to read in training statistics so that we can "denormalize" these
+    train_dep_delay = pd.read_parquet(task + '_' + 'train')['DepDelay']
+    train_max = train_dep_delay.max()
+    train_min = train_dep_delay.min()
 
-    # we also would like to see accuracy here
-    num_total = 0
-    num_correct = 0
-    with torch.no_grad():
-        with tqdm(data_loader, unit='batch') as data:
-            for record, target in data:
-                record = record.to(device)
-                target = target.to(device)
-                res = model(record)
+    #denormalization
+    data = (data * (train_max-train_min)) + train_min
 
-                # we have observations of (batch_size,1) so lets just squeeze this
-                res = torch.squeeze(res)
+    # printing top 10 predictions and actual
+    print(data.head(10))
 
-                # we want to see if the regression model offers powerful categorical predictions!
-                num_total += record.shape[0]
-                # we have false if the output is zero or less and true if greater
-                guesses = res > 0
-                actual = target > 0
-                num_correct += torch.sum((guesses == actual).long())
-
-    cat_accuracy = num_correct / num_total
-    print('regression model as categorical predictor accuracy: ' + str(cat_accuracy))
-    # setting model back to training mode (in case this is used for something else)
-    model.train()
+    # getting within 5 minute accuracy
+    data['5-min-bool'] = data.apply(lambda x: x['actual']-5 <= x['predicted'] <= x['actual']+5)
+    print('model 5-min accuracy: ' + str(data['5-min-bool'].sum()/data.size()))
+    # getting within 10 minute accuracy
+    data['10-min-bool'] = data.apply(lambda x: x['actual'] - 10 <= x['predicted'] <= x['actual']+10)
+    print('model 10-min accuracy: ' + str(data['10-min-bool'].sum() / data.size()))
 
 # getting data loader for test data
 batch_size = 524288
@@ -111,4 +109,6 @@ print('the model has: ' + str(num_params) + ' number of trainable parameters!')
 
 
 # calling evaluate
-evaluate(model,data_loader,task,device)
+guesses,actual = evaluate(model,data_loader,task,device)
+if task == 'regression':
+    get_attributes_for_regression(guesses,actual)
