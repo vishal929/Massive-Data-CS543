@@ -18,8 +18,8 @@ def evaluate(model,data_loader,task,device):
     model.eval()
 
     loss = 0
-    guesses = []
-    actual = []
+    final_guesses = []
+    final_actual = []
     # we also would like to see accuracy here
     num_total = 0
     num_correct = 0
@@ -47,8 +47,8 @@ def evaluate(model,data_loader,task,device):
                     # we also want to see if the regression model offers powerful categorical predictions!
                     num_total += record.shape[0]
 
-                guesses.extend(res.tolist())
-                actual.extend(target.tolist())
+                final_guesses.extend(res.tolist())
+                final_actual.extend(target.tolist())
     if task == 'categorical':
         accuracy = num_correct/num_total
         print('categorical loss: ' + str(loss))
