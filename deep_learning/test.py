@@ -46,10 +46,6 @@ def evaluate(model,data_loader,task,device):
                     loss += torch.nn.MSELoss()(res,target)
                     # we also want to see if the regression model offers powerful categorical predictions!
                     num_total += record.shape[0]
-                    # we have false if the ouput is zero or less and true if greater
-                    guesses = res > 0
-                    actual = target > 0
-                    num_correct += torch.sum((guesses == actual).long())
 
                 guesses.extend(res.tolist())
                 actual.extend(target.tolist())
@@ -59,8 +55,6 @@ def evaluate(model,data_loader,task,device):
         print('categorical accuracy: ' + str(accuracy))
     elif task == 'regression':
         print('regression loss: ' + str(loss))
-        cat_accuracy = num_correct/num_total
-        #print('regression model as categorical predictor accuracy: ' + str(cat_accuracy))
     # setting model back to training mode (in case this is used for something else)
     model.train()
     return guesses,actual
