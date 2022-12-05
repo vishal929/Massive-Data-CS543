@@ -57,7 +57,7 @@ def evaluate(model,data_loader,task,device):
         print('regression loss: ' + str(loss))
     # setting model back to training mode (in case this is used for something else)
     model.train()
-    return guesses,actual
+    return final_guesses,final_actual
 
 # for regression, we want to not only see loss,  but within 5-minute accuracy and within 10-minute accuracy
 # in addition, we want to just observe the first five guesses and the first five actual targets (for reporting)
