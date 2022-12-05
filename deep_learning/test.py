@@ -75,11 +75,12 @@ def get_attributes_for_regression(guesses,actual):
     print(data.head(10))
 
     # getting within 5 minute accuracy
-    data['5-min-bool'] = data['actual'] - 5 <= data['predicted'] <= data['actual'] + 5
+    data['5-min-bool'] = abs(data['predicted']-data['actual']) <= 5
     #data['5-min-bool'] = data.apply(lambda x: x['actual']-5 <= x['predicted'] <= x['actual']+5)
     print('model 5-min accuracy: ' + str(data['5-min-bool'].sum()/data.size()))
     # getting within 10 minute accuracy
-    data['10-min-bool'] = data.apply(lambda x: x['actual'] - 10 <= x['predicted'] <= x['actual']+10)
+    data['10-min-bool'] = abs(data['predicted'] - data['actual']) <= 10
+    #data['10-min-bool'] = data.apply(lambda x: x['actual'] - 10 <= x['predicted'] <= x['actual']+10)
     print('model 10-min accuracy: ' + str(data['10-min-bool'].sum() / data.size()))
 
 # getting data loader for test data
