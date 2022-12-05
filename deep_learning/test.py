@@ -62,6 +62,8 @@ def evaluate(model,data_loader,task,device):
 # for regression, we want to not only see loss,  but within 5-minute accuracy and within 10-minute accuracy
 # in addition, we want to just observe the first five guesses and the first five actual targets (for reporting)
 def get_attributes_for_regression(guesses,actual):
+    print(guesses[0:5])
+    print(actual[0:5])
     data = pd.DataFrame(data=[guesses,actual],columns=['predicted','actual'])
     # we want to read in training statistics so that we can "denormalize" these
     train_dep_delay = pd.read_parquet(task + '_' + 'train')['DepDelay']
