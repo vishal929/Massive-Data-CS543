@@ -1,0 +1,67 @@
+h1 {
+    border: 2px #eee solid;
+    text-align: center;
+    padding: 10px;
+}
+
+.winter {
+  color: rgb(104, 189, 223);
+}
+
+.spring {
+  color: rgb(253, 119, 246);
+}
+
+.fall {
+  color: rgb(236, 132, 34);
+}
+
+.summer {
+  color: rgb(230, 40, 40);
+}
+
+h2 {
+  text-align: center;
+  padding: 10px;
+}
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 25%;
+  }
+
+  .button {
+    padding: 15px 25px;
+    font-size: 24px;
+    text-align: center;
+    cursor: pointer;
+    outline: none;
+    color: #fff;
+    background-color: #04AA6D;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 9px #999;
+  }
+  
+  .button:hover {background-color: #3e8e41}
+  
+  .button:active {
+    background-color: #3e8e41;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+  }
+
+  .column {
+    float: left;
+    width: 30%;
+    padding: 7px;
+  }
+  
+  /* Clear floats after image containers */
+  .row::after {
+    content: "";
+    clear: both;
+    display: table;
+  }

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <title>Massive Data Project Interface</title>
+</head>
+<body>
+   <h1>Airline Clustering</h1>
+   <h1 class = 'spring'>Spring</h1>
+   <div class="row">
+    <div class="column">
+        <img src="{{url_for('static', filename= 'CURE/Spring/delay_distribution.png')}}" alt="delay distribution plot" style = "width:100%"/>
+    </div>
+    <div class="column">
+        <img src="{{url_for('static', filename= 'CURE/Spring/origin_map.png')}}" alt="destination map" style = "width:100%"/> 
+    </div>
+    <div class="column">
+        <img src="{{url_for('static', filename= 'CURE/Spring/destination_map.png')}}" alt="origin map" style = "width:100%"/> 
+    </div>
+  </div>
+   
+  <h2>Cluster 4</h2>
+  <div class="row">
+    <div class="column">
+        <img src="{{url_for('static', filename= 'CURE/Spring/cluster_4/airplane.png')}}" alt="delay distribution plot" style = "width:100%"/>
+    </div>
+    <div class="column">
+        <img src="{{url_for('static', filename= 'CURE/Spring/cluster_4/origin.png')}}" alt="destination map" style = "width:100%"/> 
+    </div>
+    <div class="column">
+        <img src="{{url_for('static', filename= 'CURE/Spring/cluster_4/destination.png')}}" alt="origin map" style = "width:100%"/> 
+    </div>
+  </div>
+   
+  <h2>Cluster 6</h2>
+  <div class="row">
+    <div class="column">
+        <img src="{{url_for('static', filename= 'CURE/Spring/cluster_6/airplane.png')}}" alt="delay distribution plot" style = "width:100%"/>
+    </div>
+    <div class="column">
+        <img src="{{url_for('static', filename= 'CURE/Spring/cluster_6/origin.png')}}" alt="destination map" style = "width:100%"/> 
+    </div>
+    <div class="column">
+        <img src="{{url_for('static', filename= 'CURE/Spring/cluster_6/destination.png')}}" alt="origin map" style = "width:100%"/> 
+    </div>
+  </div>
+   
+</body>
+</html>

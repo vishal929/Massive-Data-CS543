@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <title>Massive Data Project Interface</title>
+</head>
+<body>
+   <h1>Deep Learning Stats</h1>
+   <h2>Classification</h2>
+   <div class="row">
+    <div class="column">
+        <img src="{{url_for('static', filename= 'DeepLearning/categorical_table.png')}}" alt="categorical table" style = "width:100%"/>
+    </div>
+    <div class="column">
+        <img src="{{url_for('static', filename= 'DeepLearning/categorical_train_loss.png')}}" alt="categorical training loss" style = "width:100%"/> 
+    </div>
+    <div class="column">
+        <img src="{{url_for('static', filename= 'DeepLearning/categorical_validation_loss.png')}}" alt="categorical validation loss" style = "width:100%"/> 
+    </div>
+  </div>
+   
+  <h2>Regression</h2>
+  <div class="row">
+    <div class="column">
+        <img src="{{url_for('static', filename= 'DeepLearning/reg_table.png')}}" alt="regression table" style = "width:100%"/>
+    </div>
+    <div class="column">
+        <img src="{{url_for('static', filename= 'DeepLearning/reg_train_loss.png')}}" alt="regression training loss" style = "width:100%"/> 
+    </div>
+    <div class="column">
+        <img src="{{url_for('static', filename= 'DeepLearning/reg_val_loss.png')}}" alt="regression validation loss" style = "width:100%"/> 
+    </div>
+  </div>
+   
+  <h2>Download Models</h2>
+  <form method = "post" action = "/deep">
+    <input type = "submit" name = "submit_button" value = "Categorical" class="button center">
+    <input type = "submit" name = "submit_button" value = "Regression" class="button center">
+</form>
+</body>
+</html>
