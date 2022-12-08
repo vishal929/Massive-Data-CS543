@@ -24,3 +24,11 @@ We provide our processed data, clusters, errors, and models at the following dri
 Please refer to bfr_clusters.ipynb for an example of batched execution/clustering.
 The first few cells are preparing and normalizing the data, while the last cell is the clustering loop 
 for each partition.
+
+## Cluster Analysis
+You can view elbow plots in the notebooks titled plot_elbow_*.ipynb.
+Also, you can view the cluster analysis for the CURE algorithm in the notebooks under the folder cluster_analysis.
+
+## Deep Learning
+We implement and train feedforward networks for 2 tasks: regression and binary classification for departure delays. Basically, the former task is to predict the delay in minutes, while the latter task is to just predict if there is a delay or not. We receive decent results for the categorical task, but sub-par results for the regression task with our architecture.
+All of our deep learning logic is under the deep_learning folder. The data splits, models, and training/test logs are available at the Drive [link](https://drive.google.com/drive/folders/1gDONjpM9gBYyLcgn1S3Sw5Chu5NICH5E?usp=sharing)
